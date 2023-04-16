@@ -1,0 +1,26 @@
+version: '3'
+services:
+  nginx:
+    image: nginx
+    depends_on:
+      - node
+    volumes:
+      - "./conf/server.conf:/etc/nginx/conf.d/server.conf"
+      - "./app:/var/www/html"
+    ports:
+      - "80:80"
+    networks:
+      default:
+        aliases:
+          - medium.local
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medium_node
+    volumes:
+      - "./app:/home/node/app"
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    entrypoint: /usr/bin/tail -F /dev/null
