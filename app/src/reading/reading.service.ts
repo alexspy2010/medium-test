@@ -40,19 +40,6 @@ export class ReadingService {
     public async endRead(post_id: number, user_id: number, uuid: string): Promise<CustomAnswer> {
         const oPost = await this.getPost(post_id);
 
-        try {
-            const oReadingLog: ReadingLogs = await this.readingLogsRepository.create({
-                user_id: user_id,
-                post_id: post_id,
-                uuid: uuid
-            });
-            await this.readingLogsRepository.save(oReadingLog);
-        } catch (_) {
-            throw new HttpException(
-                `You vouted early`,
-                HttpStatus.BAD_REQUEST,
-            );
-        }
         const oReadingLog: ReadingLogs = await this.readingLogsRepository.findOne({
             where: { uuid: uuid, end_reading: false }
         });
@@ -76,7 +63,7 @@ export class ReadingService {
                     await this.readingRepository.save(oReading);
                 }
                 const avgReading = await transactionManager.getRepository(Readings)
-                    .createQueryBuilder("Ratings")
+                    .createQueryBuilder("Readings")
                     .where('post_id=:id', { id: oPost.id })
                     .select('AVG(reading)', 'avg')
                     .getRawOne();
